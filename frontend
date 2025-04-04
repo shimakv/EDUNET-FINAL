@@ -1,0 +1,112 @@
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { FaShoppingCart, FaUser } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+
+const App = () => {
+  return (
+    <Router>
+      <div className="bg-gradient-to-r from-blue-300 to-blue-500 min-h-screen p-4">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/order-summary" element={<OrderSummary />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+const Navbar = () => {
+  return (
+    <nav className="flex justify-between items-center bg-blue-600 shadow-lg p-4 rounded-xl text-white">
+      <h1 className="text-2xl font-extrabold">🍽️ Food Delivery</h1>
+      <div className="flex gap-6">
+        <Link to="/" className="hover:underline">Home</Link>
+        <Link to="/restaurants" className="hover:underline">Restaurants</Link>
+        <Link to="/cart" className="hover:underline flex items-center"><FaShoppingCart className="mr-1" />Cart</Link>
+        <Link to="/login" className="hover:underline flex items-center"><FaUser className="mr-1" />Login</Link>
+      </div>
+    </nav>
+  );
+};
+
+const Home = () => {
+  return <div className="p-8 text-center text-white text-3xl font-bold">Welcome to the Best Food Delivery App!</div>;
+};
+
+const Restaurants = () => {
+  const [restaurants, setRestaurants] = useState([
+    { id: 1, name: "The Gourmet Kitchen", cuisine: "Italian", rating: 4.5, foods: ["Pasta", "Pizza", "Tiramisu"] },
+    { id: 2, name: "Spicy Delight", cuisine: "Indian", rating: 4.7, foods: ["Butter Chicken", "Biryani", "Paneer Tikka"] },
+    { id: 3, name: "Sushi World", cuisine: "Japanese", rating: 4.8, foods: ["Sushi Rolls", "Ramen", "Tempura"] },
+    { id: 4, name: "Burger Haven", cuisine: "American", rating: 4.3, foods: ["Cheeseburger", "Fries", "Milkshake"] }
+  ]);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-blue-700 mb-4">🍽️ Restaurants</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {restaurants.map((restaurant) => (
+          <div key={restaurant.id} className="bg-white p-6 rounded-2xl shadow-md border border-blue-300">
+            <h3 className="font-bold text-lg text-blue-600">{restaurant.name}</h3>
+            <p className="text-blue-500">{restaurant.cuisine}</p>
+            <p className="text-yellow-500 font-semibold">⭐ {restaurant.rating}</p>
+            <h4 className="text-md font-semibold mt-3">Popular Dishes:</h4>
+            <ul className="list-disc list-inside text-blue-500">
+              {restaurant.foods.map((food, index) => (
+                <li key={index}>{food}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const OrderSummary = () => {
+  const [order, setOrder] = useState([
+    { id: 1, item: "Pasta", restaurant: "The Gourmet Kitchen", price: 12.99 },
+    { id: 2, item: "Biryani", restaurant: "Spicy Delight", price: 10.99 },
+    { id: 3, item: "Sushi Rolls", restaurant: "Sushi World", price: 15.99 }
+  ]);
+
+  const total = order.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+
+  return (
+    <div className="p-6 max-w-lg mx-auto bg-white rounded-2xl shadow-lg border border-blue-400">
+      <h2 className="text-2xl font-extrabold text-blue-700 mb-4">🛍️ Order Summary</h2>
+      <ul className="list-none text-blue-500 space-y-3">
+        {order.map((item) => (
+          <li key={item.id} className="flex justify-between py-3 px-4 bg-gray-100 rounded-lg shadow-sm">
+            <span className="font-medium">{item.item} <span className="text-sm text-gray-500">({item.restaurant})</span></span>
+            <span className="font-semibold">${item.price.toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+      <h3 className="text-lg font-semibold text-blue-600 mt-6">Total: <span className="text-2xl">${total}</span></h3>
+      <Button className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white mt-6 py-2 text-lg font-bold rounded-xl shadow-md hover:opacity-90">Place Order</Button>
+    </div>
+  );
+};
+
+const Cart = () => {
+  return <div className="p-4 text-center text-white text-2xl">🛒 Your Cart is Empty</div>;
+};
+
+const Login = () => {
+  return (
+    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md border border-blue-300">
+      <h2 className="text-2xl font-bold text-blue-700 mb-4">🔐 Login</h2>
+      <input type="text" placeholder="Email" className="w-full p-2 border border-blue-300 rounded mb-2" />
+      <input type="password" placeholder="Password" className="w-full p-2 border border-blue-300 rounded mb-2" />
+      <Button className="w-full bg-blue-500 text-white">Login</Button>
+    </div>
+  );
+};
+
+export default App;

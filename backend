@@ -1,0 +1,93 @@
+// === BACKEND (Node.js + Express + MongoDB) ===
+// backend/server.js
+
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const app = express();
+
+dotenv.config();
+app.use(cors());
+app.use(express.json());
+
+
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/zomatoClone', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+
+const RestaurantSchema = new mongoose.Schema({
+  name: String,
+  cuisine: String,
+  rating: Number,
+  foods: [String],
+});
+
+const OrderSchema = new mongoose.Schema({
+  items: [
+    {
+      item: String,
+      restaurant: String,
+      price: Number,
+    },
+  ],
+  total: Number,
+});
+
+const UserSchema = new mongoose.Schema({
+  email: String,
+  password: String,
+});
+
+const Restaurant = mongoose.model('Restaurant', RestaurantSchema);
+const Order = mongoose.model('Order', OrderSchema);
+const User = mongoose.model('User', UserSchema);
+
+
+
+
+app.get('/api/restaurants', async (req, res) => {
+  const restaurants = await Restaurant.find();
+  res.json(restaurants);
+});
+
+
+app.post('/api/restaurants', async (req, res) => {
+  const restaurant = new Restaurant(req.body);
+  await restaurant.save();
+  res.json({ message: 'Restaurant added' });
+});
+
+
+app.get('/api/orders', async (req, res) => {
+  const orders = await Order.find();
+  res.json(orders);
+});
+
+
+app.post('/api/orders', async (req, res) => {
+  const order = new Order(req.body);
+  await order.save();
+  res.json({ message: 'Order placed' });
+});
+
+
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email, password });
+  if (user) return res.json({ message: 'Login success' });
+  return res.status(401).json({ message: 'Invalid credentials' });
+});
+
+
+app.post('/api/register', async (req, res) => {
+  const user = new User(req.body);
+  await user.save();
+  res.json({ message: 'Registered successfully' });
+});
+
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
